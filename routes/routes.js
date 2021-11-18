@@ -6,6 +6,13 @@ const databaseName = "MangerDB"
 const Profile = client.db(databaseName).collection("Profile");
 passedRegex = false;
 
+// this is  the homepage 
+exports.index = async(req, res) => {
+    res.render('index', {
+        title:'Home'
+    });
+};
+
 exports.AddUser = async (req,res) =>{
     await client.connect()
 
