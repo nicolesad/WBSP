@@ -1,0 +1,14 @@
+html
+    head 
+        h1 = Login 
+    body 
+        form(method="post" action="http://localhost:3000/Login")
+            p Username:
+            <input type="text" name="Username" id="Username">
+            br
+            p Password:
+                <input type="text" name="Password" id="Password">
+            p 
+                <input type="submit" onsubmit="">
+            p 
+                a(href="/ForgotCredentials") Forgot password or username?
