@@ -17,6 +17,16 @@ exports.index = async(req, res) => {
     });
 };
 
+<<<<<<< HEAD
+>>>>>>> 6e8cbeabbf8a5ccd1927e8b74f074820bb42b3e4
+=======
+// this is  the homepage 
+exports.index = async(req, res) => {
+    res.render('index', {
+        title:'Home'
+    });
+};
+
 >>>>>>> 6e8cbeabbf8a5ccd1927e8b74f074820bb42b3e4
 exports.AddUser = async (req,res) =>{
     await client.connect() //start connection to db
