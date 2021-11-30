@@ -1,5 +1,6 @@
 html
     head 
+        link(href="/style.css" rel='stylesheet')
     body 
         h1=title
         nav
@@ -11,11 +12,4 @@ html
                     a Log in
                 li 
                     a Friends
-        div(class="Weekday")
-            div Monday
-            div Tuesday
-            div Wednesday
-            div Thursday
-            div Friday
-            div Saturday
-            div Sunday
+    block content 
