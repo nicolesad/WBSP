@@ -1,5 +1,5 @@
 const {MongoClient, ObjectId} = require('mongodb');
-const url = "mongodb+srv://dbUser:Password@cluster0.0i6jz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const url = "mongodb+srv://user:pass@taskmangercluster.usykz.mongodb.net/test";
 const client = new MongoClient(url)
 
 const databaseName = "MangerDB" //db name
@@ -7,61 +7,76 @@ const Profile = client.db(databaseName).collection("Profile"); //create table ca
 passedRegex = false; //simple bool
 const bycrpt = require('bcrypt'); 
 
-<<<<<<< HEAD
 //this method is to be used to sign up user to db
-=======
+
 // this is  the homepage 
-exports.index = async(req, res) => {
-    res.render('index', {
+exports.index = (req, res) => {
+    res.render('Homepage', {
         title:'Home'
     });
 };
 
-<<<<<<< HEAD
->>>>>>> 6e8cbeabbf8a5ccd1927e8b74f074820bb42b3e4
-=======
-// this is  the homepage 
-exports.index = async(req, res) => {
-    res.render('index', {
-        title:'Home'
+exports.signupDisplay = (req, res) => {
+    res.render('SignUp', {
+        title:'Sign up page'
     });
 };
 
->>>>>>> 6e8cbeabbf8a5ccd1927e8b74f074820bb42b3e4
-exports.AddUser = async (req,res) =>{
-    await client.connect() //start connection to db
-    pass = req.body.password; // password is equal to sign up pass field
-    const encryptedPass = SaltAndHash(pass); //salt and hash the user password
-    let ProfileDetails = { 
-        UUID : ObjectId, //UUID is unique Object Id
-        name: req.body.name,
-        email:req.body.email,
-        
-        Security : {
-            password: encryptedPass,
-            username:req.body.username,            
-        },
-        Tasks : {
-            TaskID:ObjectId,
-            Title:req.body.taskTitle,
-            Description: req.body.Description,
-            isCompleted: false,
-            Priority:false
-        },
 
-        FriendRequest={
-            FRequests:ObjectId
-        },
-        Friends = {
-            friend:ObjectId
+exports.loginDisplay = (req, res) => {
+    res.render('Login', {
+        title:'Login page'
+    });
+};
+exports.AddUser = async(req,res) =>{
+    try{
+        await client.connect() //start connection to db
+        pass = req.body.password; // password is equal to sign up pass field
+        const encryptedPass = SaltAndHash(pass); //salt and hash the user password
+        let ProfileDetails = { 
+            UserId:ObjectId, //UUID is unique Object Id
+            name: req.body.name,
+            email:req.body.email,
+            Security : {
+                password: encryptedPass,
+                username:req.body.username,            
+            },
+            Tasks : {
+                TaskID:ObjectId,
+                Title:req.body.taskTitle,
+                Description: req.body.Description,
+                isCompleted: false,
+                Priority:false
+            },
+            FriendRequest :{ FRequests:ObjectId },
+            Friends : { friend:ObjectId }
         }
-    }
-    const InsertUser = await Profile.insertOne(ProfileDetails); //Inserting to db collection
-    client.close() //closing db
+        const InsertUser = await Profile.insertOne(ProfileDetails); //Inserting to db collection
+        InsertUser
+        client.close() //closing db
+    }catch(Exception){ console.log(Exception); }
+    res.redirect("/home");
 };
 
 exports.PullUser = async (req,res) => {
 
+};
+
+
+exports.CreateTask = async (req,res) =>{
+    const UserID = this.ProfileDetails.UUID;
+    const tt = UserID.taskTitle
+    const dd = UserID.Description 
+    const complete =UserID.isCompleted
+    const priority = UserID.Priority
+
+    tt = req.body.TaskTitle;
+    dd = req.body.Descript;
+    complete = req.body.check;
+    priority =  req.body.isPriority;
+    Profile.append()
+    
+    
 };
 
 exports.DeleteTask = async (req,res) =>{
@@ -69,12 +84,16 @@ exports.DeleteTask = async (req,res) =>{
     deleteT
 };
 
-const deleteT = (ObjectId) =>{
-    await client.connect();
-    const d = await Profile.deleteOne(Del => ProfileDetails.TaskID == ObjectId);
+const deleteT = async (ObjectId) =>{
+    try{
+        await client.connect();
+        const d = await Profile.deleteOne(Del => ProfileDetails.TaskID == ObjectId);
+        
+        client.close();
+        return d;
+    }
+    catch(Exception){ console.log(Exception) }
     
-    client.close();
-    return d;
 };
 
 //Method is used in SaltAndHash method
@@ -84,57 +103,21 @@ const checkRegex = (str) => {
     let passwordRegex = /(?=.[a-z])(?=.[0-9])(?=.[A-Z])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{8,}/;
     let nameRegex = /.[a-z].[a-z].*/;
     let usernameRegex = /^[a-z0-9_-]{3,16}$/;
-    let num = 0;
-    passed = false;
-    //Switch case to check regex
-    switch(num)
-    {
-        case 0:
-            if(nameRegex.test(str) == true) // test regex
-            {
-                passed = true
-                num +=1;
-            }
-        break
-        case 1:
-            passed = false
-            if(emailRegex.test(str) == true)
-            {
-                passed = true
-                num +=1;
-            }
-            
-        break
-        case 2:
-        passed = false
-        if(usernameRegex.test(str) == true)
-            {
-                passed = true
-                num +=1;
-            }
-        break
-        case 3:
-            passed = false
-            if(passwordRegex.test(str) == true)
-            {
-                passed = true
-                num +=1;
-            }
-            
-        break
-    }
-    if(passed){ return passedRegex = true; num= 0} //returns bool when passed
+    let passed = false;
+    if(nameRegex.test(str)){ passed = true; }
+    if(emailRegex.test(str)){ passed = true; }
+    if(usernameRegex.test(str)){ passed = true; }
+    if(passwordRegex.test(str)){ passed = true; }
+    return passed
 };
 //Return salt and hash password
 const SaltAndHash = (Str) => {
-    if(checkRegex(str)){
+    if(checkRegex(Str)){
         const salt = bycrpt.genSaltSync(10);
-        const hash = bycrpt.hashSync()
+        const hash = bycrpt.hashSync(Str,salt)
         return hash
     }
-    else{
-        console.log("SOmething went wrong");
-    }
+    else{ console.log("SOmething went wrong"); }
 };
 
 //To be used for Login page
@@ -143,7 +126,6 @@ exports.Login = async(req,res) =>{
     UserUname = req.body.username
     UserPassword = req.body.password
     let usernameRegex = /^[a-z0-9_-]{3,16}$/;
-
     if(checkAuth && usernameRegex.test(UserUname))
     {
         const result = Profile.findOne({password:UserPassword}).toArray(1);
@@ -157,7 +139,6 @@ const checkAuth = (str) =>{
     //Check if password matches
     //start a session
     //direct them to home page
-
     const auth = bycrpt.compare(req.body.password, SaltAndHash);
     if(auth)
     {
@@ -168,10 +149,4 @@ const checkAuth = (str) =>{
         console.log("incorrect password")
         return false
     }
-};
-
-
-
-exports.LogoutUser() = async (req, res) => {
-    
 };

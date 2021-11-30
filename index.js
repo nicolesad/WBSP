@@ -5,7 +5,7 @@ const routes = require('./routes/routes');
 const app = express();
 
 app.set("view engine",'pug');
-app.set('view',__dirname + "/views");
+app.set('views',__dirname + "/views");
 
 const urlencodedParser = express.urlencoded({
     extended: false
@@ -14,8 +14,12 @@ const urlencodedParser = express.urlencoded({
 // redirects 
 app.get('/', routes.index);
 app.get('/home', routes.index);
-app.get('/signup', routes.AddUser);
+
+app.get('/signup', routes.signupDisplay);
+app.post("/signup",urlencodedParser, routes.AddUser);
+
+//app.get('/login',routes.loginDisplay);
+//app.post("/login",urlencodedParser, routes.Login);
 // app.get('/task', routes.task);
-// app.get('/login',routes.login);
 
 app.listen(3000);
