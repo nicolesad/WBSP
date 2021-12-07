@@ -1,0 +1,21 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+    body 
+        h1=person.name 
+        console.log(person.name)
+        block content
+            form(action="http://localhost:3000/createTask/" + person._id +"/" + elementId, method="post")
+                p Title
+                    <input type="text" name="taskTitle" id="taskTitle">
+                p Description
+                    <input type="text" name="descript" id="descript">
+                P Priority
+                    <input type="checkbox" name="Yes" id="Yes" value="yes" checked> Yes
+                    <input type="checkbox" name="No" id="No" value="no"> Nah
+                p 
+                    input(type="submit")

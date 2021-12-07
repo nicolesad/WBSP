@@ -10,10 +10,15 @@ const bycrpt = require('bcrypt');
 //this method is to be used to sign up user to db
 
 // this is  the homepage 
-exports.index = (req, res) => {
+exports.index = async (req, res) => {
+    await client.connect()
+    personResult = await Profile.findOne({name:"Sally"})
+    client.close()
     res.render('Homepage', {
-        title:'Home'
+        title:'Home',
+        person: personResult
     });
+    
 };
 
 exports.signupDisplay = (req, res) => {
@@ -22,12 +27,22 @@ exports.signupDisplay = (req, res) => {
     });
 };
 
+exports.taskGet = async (req, res) =>{
+    await client.connect()
+    getPerson = await Profile.findOne({_id: ObjectId(req.params.id)})
+    client.close()
+    res.render('Tasks', {
+        person: getPerson,
+        elementId: req.params.elementId
+    })
+}
 
 exports.loginDisplay = (req, res) => {
     res.render('Login', {
         title:'Login page'
     });
 };
+
 exports.AddUser = async(req,res) =>{
     try{
         await client.connect() //start connection to db
@@ -41,13 +56,15 @@ exports.AddUser = async(req,res) =>{
                 password: encryptedPass,
                 username:req.body.username,            
             },
-            Tasks : {
+            
+            Tasks :[ {
                 TaskID:ObjectId,
                 Title:req.body.taskTitle,
                 Description: req.body.Description,
+                date:req.body.Date,
                 isCompleted: false,
                 Priority:false
-            },
+            }],
             FriendRequest :{ FRequests:ObjectId },
             Friends : { friend:ObjectId }
         }
@@ -59,42 +76,53 @@ exports.AddUser = async(req,res) =>{
 };
 
 exports.PullUser = async (req,res) => {
-
+    
 };
 
 
 exports.CreateTask = async (req,res) =>{
-    const UserID = this.ProfileDetails.UUID;
-    const tt = UserID.taskTitle
-    const dd = UserID.Description 
-    const complete =UserID.isCompleted
-    const priority = UserID.Priority
+    await client.connect()
 
-    tt = req.body.TaskTitle;
-    dd = req.body.Descript;
-    complete = req.body.check;
-    priority =  req.body.isPriority;
-    Profile.append()
+    taskPriority = ""
+
+    console.log(req.body.Yes)
+    console.log(req.body.No)
+
+    if(req.body.Yes !== undefined){
+        taskPriority = req.body.Yes
+    }else if(req.body.No !== undefined){
+        taskPriority = req.body.No
+    }else{
+        console.log("check keys being sent")
+    }
+
+    taskIdCreated = new ObjectId();
+
+    getPerson = await Profile.updateOne({_id:ObjectId(req.params.id)},{$push:
+        {
+        Tasks:{
+            taskId: taskIdCreated,
+            Title: req.body.taskTitle,
+            Description: req.body.descript,
+            date: "12/"+ req.params.elementId + "/2021",
+            Priority: taskPriority
+        }}})
     
-    
+    client.close();
+    res.redirect("/home")
 };
+
 
 exports.DeleteTask = async (req,res) =>{
     //Identify who is the user?
-    deleteT
+    await client.close()
+    getPerson = await Profile.deleteOne({_id:ObjectId(req.params.id)},{$:
+
+
+
+    client.close();
 };
 
-const deleteT = async (ObjectId) =>{
-    try{
-        await client.connect();
-        const d = await Profile.deleteOne(Del => ProfileDetails.TaskID == ObjectId);
-        
-        client.close();
-        return d;
-    }
-    catch(Exception){ console.log(Exception) }
-    
-};
 
 //Method is used in SaltAndHash method
 const checkRegex = (str) => {
